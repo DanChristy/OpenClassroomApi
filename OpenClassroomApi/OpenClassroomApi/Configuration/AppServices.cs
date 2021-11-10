@@ -1,5 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OpenClassroomApi.BusinessManagers;
+using OpenClassroomApi.BusinessManagers.Interfaces;
 using OpenClassroomApi.Data;
+using OpenClassroomApi.Data.Services;
+using OpenClassroomApi.Data.Services.Interfaces;
 
 namespace OpenClassroomApi.Configuration {
     public static class AppServices {
@@ -14,6 +18,11 @@ namespace OpenClassroomApi.Configuration {
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+        }
+
+        public static void AddCustomServices(this IServiceCollection services) {
+            services.AddScoped<ISchoolService, SchoolService>();
+            services.AddScoped<ISchoolBusinessManager, SchoolBusinessManager>();
         }
     }
 }

@@ -1,25 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OpenClassroomApi.Data;
+using OpenClassroomApi.BusinessManagers.Interfaces;
 using OpenClassroomApi.Data.Models;
 
 namespace OpenClassroomApi.Controllers {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("[controller]")]
     public class SchoolsController : Controller {
-        private readonly ApplicationDbContext applicationDbContext;
-        public SchoolsController(ApplicationDbContext applicationDbContext) {
-            this.applicationDbContext = applicationDbContext;
+        private readonly ISchoolBusinessManager schoolBusinessManager;
+        public SchoolsController(ISchoolBusinessManager schoolBusinessManager) {
+            this.schoolBusinessManager = schoolBusinessManager;
         }
-        
+
+        [HttpGet]
+        public ActionResult<IEnumerable<School>> Retrieve() {
+            return schoolBusinessManager.GetAll();
+        }
+
         [HttpGet("{id}")]
-        public ActionResult<School> Details(Guid id) {
-            var school = applicationDbContext.Schools.FirstOrDefault(school => school.Id == id);
+        public async Task<ActionResult<School>> Retrieve(Guid id) {
+            return await schoolBusinessManager.GetSchoolByIdAsync(id);
+        }
 
-            if (school is null) {
-                return new NotFoundObjectResult($"A school with an id of ({id}) was not found.");
-            }
+        [HttpPost]
+        public async Task<ActionResult<Guid>> Create(School school) {
+            return await schoolBusinessManager.CreateSchoolAsync(school);
+        }
 
-            return school;
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(Guid id) {
+            return await schoolBusinessManager.DeleteSchoolAsync(id);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<School>> Update(Guid id, School school) {
+            return await schoolBusinessManager.UpdateSchoolAsync(id, school);
         }
     }
 }
